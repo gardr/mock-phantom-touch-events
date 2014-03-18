@@ -1,7 +1,7 @@
 {
-  "name": "moch-touches",
+  "name": "mock-phantom-touch-events",
   "version": "0.0.0",
-  "description": "",
+  "description": "Helpers to trigger touch events on phantomjs.",
   "main": "lib/index.js",
   "scripts": {
     "test": "make test"
@@ -10,16 +10,13 @@
   "contributors": [
     "Sveinung Rosaker <sveinung.rosaker@finn.no>"
   ],
-  "homepage": "https://github.com/gardr/mock-touches",
+  "homepage": "https://github.com/gardr/mock-phantom-touch-events",
   "repository": {
     "type": "git",
-    "url": "git@github.com:gardr/mock-touches.git"
+    "url": "git@github.com:gardr/mock-phantom-touch-events.git"
   },
   "keywords": [
-    "gardr",
-    "iframe",
-    "ads",
-    "third-party"
+    "phantomjs"
   ],
   "license": "MIT",
   "dependencies": {},

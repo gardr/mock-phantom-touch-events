@@ -9,5 +9,3 @@ mock-touches
 
 For PhantomJS!
 Trigger touch events on phantomjs.
-
-
