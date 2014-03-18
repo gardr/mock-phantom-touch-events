@@ -1,6 +1,6 @@
 {
   "name": "mock-phantom-touch-events",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Helpers to trigger touch events on phantomjs.",
   "main": "lib/index.js",
   "scripts": {
