@@ -1,12 +1,13 @@
-var ID = 'TEST_ELEM_ID';
+var IDS = ['TEST_ELEM_ID_1', 'TEST_ELEM_ID_2'];
 
 function onPageOpen(api) {
 
-    function touchDebug(id) {
+    function touchDebug(ids) {
+
 
         var elem = document.createElement('a');
         elem.href = '#';
-        elem.id = id;
+        elem.id = ids[0];
         elem.innerHTML = '<p>Some content</p>';
 
         document.body.appendChild(elem);
@@ -14,70 +15,100 @@ function onPageOpen(api) {
         elem.style.height = '100px';
         elem.style.display = 'block';
 
-        var keys = ['click','touchstart', 'touchend', 'touchmove', 'touchenter', 'touchleave', 'touchcancel'];
+        var canvas = document.createElement('canvas');
+        canvas.id = ids[1];
+        document.body.appendChild(canvas);
 
-        keys.forEach(function(key) {
-            elem.addEventListener(key, onTouch, false);
+        canvas.style.width = '100px';
+        canvas.style.height = '100px';
+        canvas.style.display = 'block';
+
+
+        [elem, canvas].forEach(function(el) {
+            var keys = ['click', 'touchstart', 'touchend', 'touchmove', 'touchenter', 'touchleave', 'touchcancel'];
+
+            keys.forEach(function(key) {
+                el.addEventListener(key, onTouch, false);
+            });
+
+            function onTouch(e) {
+                e.stopImmediatePropagation();
+                //e.returnValue = false;
+                //e.preventDefault();
+                //e.stopPropagation();
+                //return false;
+            }
+
+            keys.forEach(function(key) {
+                el.addEventListener(key, onTouch2, false);
+            });
+
+            function onTouch2(e) {
+                //e.returnValue = true;
+                e.preventDefault();
+            }
         });
 
-        function onTouch(e) {
-            e.stopImmediatePropagation();
-            //e.returnValue = false;
-            //e.preventDefault();
-		    //e.stopPropagation();
-            //return false;
-        }
-
-        keys.forEach(function(key) {
-            elem.addEventListener(key, onTouch2, false);
-        });
-
-        function onTouch2(e) {
-            //e.returnValue = true;
-            e.preventDefault();
-        }
     }
 
-    api.evaluate(touchDebug, ID);
+    api.evaluate(touchDebug, IDS);
 
 }
 
-var KEY = '__tests';
+var NAMESPACE = '__tests';
+
 function onHalfTime(api) {
     api.injectLocalJs('./lib/index.js');
-    api.evaluate(function(key, id) {
-        var elem = document.getElementById(id);
-        try {
-            window.swipeLeft(elem, 200, 10, function(_event) {
-                window[key] = window[key] || {};
-                window[key][_event.type] = window[key][_event.type] || [];
+    api.evaluate(function(ns, ids) {
+
+        function swipeElementWithId(id) {
+            var elem = document.getElementById(id);
+
+            function swipeEventHandler(_event) {
+                window[ns] = window[ns] || {};
+                window[ns][_event.type] = window[ns][_event.type] || [];
                 var o = {
+                    'id': id,
                     'x': _event.pageX,
                     'y': _event.pageY,
                     '__event': _event
                 };
-                window[key][_event.type].push(o);
-            });
-        } catch (e) {
-            console.log('Failed swiping', e, e.message, e.stack);
+                window[ns][_event.type].push(o);
+            }
+
+            try {
+                // RUN touch
+                window.swipeLeft(elem, 200, 10, swipeEventHandler);
+            } catch (e) {
+                console.log('Failed swiping', e, e.message, e.stack);
+            }
         }
-    }, KEY, ID);
+
+        ids.forEach(swipeElementWithId);
+
+    }, NAMESPACE, IDS);
 }
 
 function onBeforeExit(api) {
-    var probed = api.evaluate(function(key) {
-        Object.keys(window[key]).forEach(function(_key) {
-            window[key][_key].forEach(function(e) {
+    function collectProbes(ns) {
+        function reformatEvents(storedKey) {
+            window[ns][storedKey].forEach(function(e) {
                 e.returnValue = e.__event.returnValue;
                 e.defaultPrevented = e.__event.defaultPrevented;
                 delete e.__event;
             });
-        });
+        }
+
+        Object.keys(window[ns]).forEach(reformatEvents);
+
+
+
         return {
-            tests: window[key]
+            tests: window[ns]
         };
-    }, KEY);
-    api.set('testData', probed);
+    }
+
+    api.set('testData', api.evaluate(collectProbes, NAMESPACE));
 }
 
 module.exports = {

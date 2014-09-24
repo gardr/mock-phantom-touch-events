@@ -128,10 +128,20 @@ describe('Touch Hook', function () {
             }
             refute(err);
             var data = result.touchHook.testData.tests;
-            //console.log('\nHARVESTED:', result.touchHook.testData.tests);
-            assert.equals(data.touchend.length, 1);
-            assert.equals(data.touchstart.length, 1);
-            assert.equals(data.touchmove.length, 9);
+
+            function filterById(key){
+                return function(entry){
+                    return entry.id === key;
+                };
+            }
+
+            ['TEST_ELEM_ID_1', 'TEST_ELEM_ID_2'].forEach(function(id){
+                assert.equals(data.touchend.filter(filterById(id)).length, 1);
+                assert.equals(data.touchstart.filter(filterById(id)).length, 1);
+                assert.equals(data.touchmove.filter(filterById(id)).length, 9);
+            });
+
+
             refute(data.touchmove[0].defaultPrevented);
 
             //console.log('HARVESTED LOGS:\n'+ result.log.logs.map(function(a){return 'log: '+a.message;}).join('\n'));
