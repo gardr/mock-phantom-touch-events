@@ -112,12 +112,17 @@ describe('Touch Hook', function () {
     it('should run with touch hook', function (done) {
         this.timeout(3000);
         var options = {
-            hooks: {
-                touchHook: __dirname +'/fixtures/touchHook.js',
-                log: true
-            },
-            preprocessors: {},
-            validators: {},
+            instrument: [
+                {
+                    name: 'touchHook',
+                    path: __dirname +'/fixtures/touchHook.js'
+                },
+                'log'
+            ],
+            preprocess: [],
+            validate: [],
+            outputDirectory: __dirname,
+            scriptUrl: __dirname +'/fixtures/script.js',
             pageRunTime: 500,
             width: 100,
             height: 100
@@ -128,6 +133,8 @@ describe('Touch Hook', function () {
             }
             refute(err);
             var data = result.touchHook.testData.tests;
+
+            // console.log('HARVESTED LOGS:\n'+ result.log.logs.map(function(a){return 'log: '+a.message;}).join('\n'));
 
             function filterById(key){
                 return function(entry){
@@ -144,7 +151,7 @@ describe('Touch Hook', function () {
 
             refute(data.touchmove[0].defaultPrevented);
 
-            //console.log('HARVESTED LOGS:\n'+ result.log.logs.map(function(a){return 'log: '+a.message;}).join('\n'));
+
             assert(result.log);
             done();
         });

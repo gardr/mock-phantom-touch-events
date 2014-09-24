@@ -21,12 +21,12 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "referee": "^1.0.2",
-    "mocha": "^1.17.1",
     "coveralls": "^2.8.0",
+    "gardr-validator": "^0.8.4",
     "istanbul": "^0.2.6",
-    "mocha-lcov-reporter": "0.0.1",
     "jshint": "^2.4.4",
-    "gardr-validator": "^0.1.5"
+    "mocha": "^1.17.1",
+    "mocha-lcov-reporter": "0.0.1",
+    "referee": "^1.0.2"
   }
 }
