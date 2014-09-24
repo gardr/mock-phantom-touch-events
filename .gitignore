@@ -13,3 +13,4 @@ node_modules
 
 coverage
 report.xml
+test/output-*.json
